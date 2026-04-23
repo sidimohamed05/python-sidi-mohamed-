@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Académie Python Sidi Mohamed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&family=Fraunces:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<style>
+:root{
+  --bg:#eef4f7;
+  --paper:#ffffff;
+  --paper2:#f7fbfd;
+  --ink:#172033;
+  --muted:#667085;
+  --line:#d9e3ea;
+  --primary:#2f6f8f;
+  --primary2:#4aa3a2;
+  --accent:#f28c52;
+  --green:#2e9d73;
+  --red:#cf4d55;
+  --yellow:#f3c969;
+  --shadow:0 18px 45px rgba(23,32,51,.10);
+  --radius:24px;
+}
+[data-theme="dark"]{
+  --bg:#101826;
+  --paper:#172033;
+  --paper2:#1d2939;
+  --ink:#f7fbfd;
+  --muted:#b6c2cf;
+  --line:#344054;
+  --shadow:0 18px 45px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Outfit,system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(74,163,162,.18), transparent 35%),
+    radial-gradient(circle at 90% 18%, rgba(242,140,82,.16), transparent 30%),
+    linear-gradient(135deg,var(--bg),var(--paper2));
+  color:var(--ink);
+  line-height:1.7;
+  min-height:100vh;
+}
+body.locked{overflow:hidden}
+button,input,textarea{font:inherit}
+.hidden{display:none!important}
+.progress-top{position:fixed;top:0;left:0;height:5px;background:linear-gradient(90deg,var(--primary),var(--primary2),var(--accent));z-index:100;width:0}
+.app-shell{display:grid;grid-template-columns:292px 1fr;min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;padding:24px;background:rgba(255,255,255,.70);
+  border-right:1px solid var(--line);backdrop-filter:blur(18px);overflow:auto;z-index:20
+}
+[data-theme="dark"] .sidebar{background:rgba(23,32,51,.75)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.brand-mark{
+  width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;display:grid;place-items:center;font-weight:900;font-size:1.35rem;box-shadow:var(--shadow)
+}
+.brand h1{font-family:Fraunces,serif;font-size:1.25rem;line-height:1}
+.brand span{color:var(--muted);font-size:.82rem}
+.user-card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:22px;box-shadow:var(--shadow)
+}
+.user-card .avatar{width:48px;height:48px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--yellow));display:grid;place-items:center;color:#172033;font-weight:900;margin-bottom:10px}
+.user-card b{display:block}.user-card small{color:var(--muted)}
+.global-progress{margin-top:14px}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--green));border-radius:99px;transition:.4s}
+.nav-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:900;margin:18px 0 10px}
+.nav-list{display:grid;gap:8px}
+.nav-link{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 13px;border-radius:16px;
+  color:var(--ink);text-decoration:none;font-weight:700;border:1px solid transparent
+}
+.nav-link:hover,.nav-link.active{background:var(--paper);border-color:var(--line);box-shadow:0 8px 24px rgba(23,32,51,.06)}
+.badge{font-size:.72rem;padding:3px 8px;border-radius:99px;background:var(--paper2);border:1px solid var(--line);color:var(--muted)}
+.sidebar-actions{display:grid;gap:10px;margin-top:22px}
+.btn{
+  border:0;border-radius:16px;padding:12px 16px;font-weight:900;cursor:pointer;background:var(--primary);color:white;
+  box-shadow:0 12px 28px rgba(47,111,143,.22);transition:.2s
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.secondary{background:var(--paper);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.danger{background:var(--red)}
+.main{padding:32px;max-width:1180px;width:100%;margin:0 auto}
+.hero{
+  min-height:78vh;display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding:44px 0 70px
+}
+@media(max-width:980px){.app-shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.hero{grid-template-columns:1fr}.main{padding:22px}}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:99px;background:var(--paper);border:1px solid var(--line);color:var(--primary);font-weight:900;font-size:.86rem;margin-bottom:18px}
+.hero h2{font-family:Fraunces,serif;font-size:clamp(2.8rem,6vw,5.7rem);line-height:.95;letter-spacing:-.05em;margin-bottom:22px}
+.hero h2 em{color:var(--primary);font-style:normal}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:720px;margin-bottom:26px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.dashboard{
+  background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:32px;padding:22px;box-shadow:var(--shadow);backdrop-filter:blur(18px)
+}
+[data-theme="dark"] .dashboard{background:rgba(23,32,51,.65)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:18px}
+.stat strong{font-size:2rem;display:block;color:var(--primary)}
+.stat span{color:var(--muted);font-weight:700}
+.terminal{margin-top:14px;background:#0d1420;color:#d7fff4;border-radius:22px;padding:18px;font-family:"JetBrains Mono";font-size:.88rem;overflow:auto}
+.section-title{font-family:Fraunces,serif;font-size:2.5rem;margin:30px 0 18px}
+.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:50px}
+.course-card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);text-decoration:none;color:var(--ink);transition:.2s
+}
+.course-card:hover{transform:translateY(-4px)}
+.course-card .num{color:var(--primary);font-weight:900;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase}
+.course-card h3{font-family:Fraunces,serif;font-size:1.35rem;margin:8px 0}
+.course-card p{color:var(--muted);font-size:.96rem}
+.chapter{
+  background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:34px;padding:34px;margin:34px 0;box-shadow:var(--shadow)
+}
+[data-theme="dark"] .chapter{background:rgba(23,32,51,.55)}
+.chapter-head{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px}
+.chapter-head small{color:var(--primary);font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.chapter-head h2{font-family:Fraunces,serif;font-size:clamp(2rem,4vw,3.6rem);line-height:1.05;margin:6px 0}
+.chapter-head p{color:var(--muted)}
+h3{font-family:Fraunces,serif;font-size:1.55rem;margin:26px 0 10px;color:var(--primary)}
+p,li{font-size:1.04rem}
+ul,ol{padding-left:24px;margin:12px 0 18px}
+code{font-family:"JetBrains Mono";background:var(--paper2);border:1px solid var(--line);padding:2px 6px;border-radius:8px}
+pre{background:#0d1420;color:#edf9ff;border-radius:18px;padding:18px;overflow:auto;margin:16px 0;font-family:"JetBrains Mono";font-size:.92rem}
+pre code{background:transparent;border:0;padding:0}
+.box{background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--primary2);border-radius:20px;padding:18px;margin:18px 0}
+.runner{background:#0d1420;color:#edf9ff;border-radius:26px;padding:20px;margin:26px 0;box-shadow:var(--shadow)}
+.runner h3{color:white;margin-top:0}
+textarea{width:100%;min-height:190px;background:#080d14;color:#f8fafc;border:1px solid #344054;border-radius:18px;padding:14px;font-family:"JetBrains Mono";font-size:.92rem;line-height:1.5;resize:vertical}
+.runbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}.status{color:#fde68a;font-size:.86rem;font-family:"JetBrains Mono"}
+.output{background:#05080c;color:#d1fae5;border:1px solid #344054;border-radius:18px;min-height:76px;white-space:pre-wrap}
+.quiz,.exercise{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:22px;margin:24px 0;box-shadow:var(--shadow)}
+.quiz-title{font-family:Fraunces,serif;font-size:1.35rem;margin-bottom:8px}
+.option{display:block;width:100%;text-align:left;margin:10px 0;background:var(--paper2);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:none}
+.option.correct{background:rgba(46,157,115,.15);border-color:var(--green);color:var(--green)}
+.option.wrong{background:rgba(207,77,85,.14);border-color:var(--red);color:var(--red)}
+.feedback{font-weight:900;margin:10px 0}
+.solution{display:none;background:var(--paper2);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px}
+.solution.visible{display:block}
+.checkline{display:flex;align-items:center;gap:10px;margin:18px 0}
+.checkline input{width:20px;height:20px}
+.login-modal{position:fixed;inset:0;background:linear-gradient(135deg,rgba(47,111,143,.92),rgba(74,163,162,.9));display:grid;place-items:center;z-index:200;padding:20px}
+.login-card{width:min(520px,100%);background:var(--paper);color:var(--ink);border-radius:34px;padding:30px;box-shadow:0 30px 80px rgba(0,0,0,.28)}
+.login-card h2{font-family:Fraunces,serif;font-size:2.3rem;line-height:1;margin-bottom:10px}
+.login-card p{color:var(--muted);margin-bottom:20px}
+.field{display:grid;gap:6px;margin:14px 0}
+.field label{font-weight:900}.field input{border:1px solid var(--line);border-radius:16px;padding:13px;background:var(--paper2);color:var(--ink)}
+.table-wrap{overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:22px;margin:16px 0}
+table{width:100%;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--primary)}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--ink);color:var(--paper);border-radius:18px;padding:14px 18px;box-shadow:var(--shadow);z-index:300;display:none}
+.toast.show{display:block}
+</style>
+</head>
+<body class="locked">
+<div class="progress-top" id="topProgress"></div>
+
+<div class="login-modal" id="loginModal">
+  <div class="login-card">
+    <div class="brand" style="margin-bottom:18px">
+      <div class="brand-mark">Py</div>
+      <div><h1>Académie Python</h1><span>Connexion étudiant</span></div>
+    </div>
+    <h2>Bienvenue 👋</h2>
+    <p>Entrez votre nom pour ouvrir votre espace. Vos scores, chapitres terminés et progrès seront sauvegardés dans la base locale du navigateur.</p>
+    <div class="field">
+      <label>Nom complet</label>
+      <input id="studentName" placeholder="Ex. Sidi Mohamed ">
+    </div>
+    <div class="field">
+      <label>Groupe / classe</label>
+      <input id="studentGroup" placeholder="Ex. L1 Informatique">
+    </div>
+    <button class="btn" id="loginBtn" style="width:100%">Entrer dans la plateforme</button>
+  </div>
+</div>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">Py</div>
+      <div><h1>Académie Python</h1><span>Sidi Mohamed</span></div>
+    </div>
+    <div class="user-card">
+      <div class="avatar" id="avatar">?</div>
+      <b id="displayName">Étudiant</b>
+      <small id="displayGroup">Groupe non défini</small>
+      <div class="global-progress">
+        <small>Progression globale</small>
+        <div class="bar"><span id="globalBar"></span></div>
+        <small id="globalText">0%</small>
+      </div>
+    </div>
+    <div class="nav-title">Cours</div>
+    <div class="nav-list" id="sideNav"></div>
+    <div class="sidebar-actions">
+      <button class="btn secondary" id="themeBtn">Mode sombre / clair</button>
+      <button class="btn secondary" id="exportBtn">Exporter la base</button>
+      <button class="btn danger" id="resetBtn">Réinitialiser</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero" id="accueil">
+      <div>
+        <div class="eyebrow">🌿 Nouvelle interface douce</div>
+        <h2>Apprendre <em>Python</em> avec suivi réel.</h2>
+        <p>Cette plateforme contient des chapitres détaillés, des zones d'exécution Python, des quiz avec solutions, des exercices corrigés, un tableau de progression et une base de données locale.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#plan" style="text-decoration:none">Commencer</a>
+          <a class="btn secondary" href="#database" style="text-decoration:none">Voir la base</a>
+        </div>
+      </div>
+      <div class="dashboard">
+        <div class="stats">
+          <div class="stat"><strong id="statChapters">0/7</strong><span>Chapitres terminés</span></div>
+          <div class="stat"><strong id="statScore">0%</strong><span>Score quiz</span></div>
+          <div class="stat"><strong id="statRuns">0</strong><span>Codes exécutés</span></div>
+          <div class="stat"><strong id="statSaved">Auto</strong><span>Sauvegarde</span></div>
+        </div>
+        <div class="terminal">>>> utilisateur = "<span id="terminalName">Étudiant</span>"<br>>>> progression.sauvegarder()<br>✅ Données enregistrées localement</div>
+      </div>
+    </section>
+
+    <section id="plan">
+      <h2 class="section-title">Plan du cours</h2>
+      <div class="course-grid" id="courseGrid"></div>
+    </section>
+
+    <div id="chapters"></div>
+
+    <section class="chapter" id="database">
+      <div class="chapter-head">
+        <small>Base de données locale</small>
+        <h2>Progression enregistrée</h2>
+        <p>Cette section simule une vraie base de données. Les informations sont conservées dans <code>localStorage</code>.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Champ</th><th>Valeur</th></tr></thead>
+          <tbody id="dbTable"></tbody>
+        </table>
+      </div>
+      <p class="box">Pour une plateforme en ligne avec comptes réels, il faudra remplacer cette base locale par Supabase, Firebase ou un backend Python/Django.</p>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CHAPTERS = [
+  {
+    id:"ch1", title:"Bases de Python", tag:"Variables · Opérateurs · Conditions · Boucles",
+    content:`<p>Ce chapitre présente les bases indispensables : variables, types, conversions, opérations, entrées/sorties, conditions et boucles.</p>
+    <div class="box"><b>Variable.</b> Une variable est une zone mémoire nommée. Exemple : <code>age = 17</code>. Python détecte le type automatiquement, mais <code>input()</code> retourne toujours du texte.</div>
+    <h3>Variables et conversions</h3><pre><code>age = int(input("Votre âge : "))
+note = float(input("Votre note : "))
+print(f"Dans 10 ans : {age + 10}")</code></pre>
+    <h3>Conditions</h3><pre><code>if note >= 10:
+    print("Reçu")
+elif note >= 8:
+    print("Rattrapage")
+else:
+    print("Ajourné")</code></pre>
+    <h3>Boucles</h3><pre><code>for i in range(5):
+    print(i)
+
+mot = ""
+while mot != "stop":
+    mot = input("Tapez stop : ")</code></pre>`,
+    code:`nom = "Sidi Mohamed"
+age = 17
+note = 14.5
+
+print(f"{nom} a {age} ans.")
+if note >= 10:
+    print("Admis")
+else:
+    print("Ajourné")
+
+somme = 0
+for i in range(1, 6):
+    somme += i
+print("Somme =", somme)`,
+    quiz:[
+      ["Que retourne input() ?",["Un entier","Une chaîne de caractères","Un booléen"],1,"input() retourne toujours str. Il faut convertir avec int() ou float()."],
+      ["Quel opérateur teste l'égalité ?",["=","==","!="],1,"= affecte une valeur, == compare deux valeurs."]
+    ],
+    exercise:"Demander une note et afficher Très bien, Bien, Passable ou Ajourné.",
+    solution:`note = float(input("Note : "))
+if note >= 16:
+    print("Très bien")
+elif note >= 14:
+    print("Bien")
+elif note >= 10:
+    print("Passable")
+else:
+    print("Ajourné")`
+  },
+  {
+    id:"ch2", title:"Listes, tuples et dictionnaires", tag:"Indexation · slicing · méthodes",
+    content:`<p>Les listes stockent plusieurs éléments. Elles sont modifiables, indexées et acceptent les doublons. Les tuples sont immuables. Les dictionnaires stockent des paires clé-valeur.</p>
+    <h3>Listes</h3><pre><code>fruits = ["apple", "banana", "cherry"]
+print(fruits[0])
+print(fruits[-1])
+fruits.append("orange")
+fruits[1] = "kiwi"</code></pre>
+    <h3>Slicing</h3><pre><code>M = [0,1,2,3,4,5,6,7,8,9,10]
+print(M[3:6])
+print(M[::2])
+print(M[::-1])</code></pre>
+    <h3>Dictionnaires</h3><pre><code>etudiant = {"nom":"Sidi Mohamed", "note":15}
+print(etudiant["nom"])
+print(etudiant.get("ville", "inconnue"))</code></pre>`,
+    code:`notes = [14, 9, 17, 11, 15]
+admis = [n for n in notes if n >= 10]
+print("Notes admises :", admis)
+print("Moyenne :", sum(notes) / len(notes))
+
+stock = {"pomme": 5, "banane": 3}
+stock["banane"] -= 1
+print(stock)`,
+    quiz:[
+      ["Indice du premier élément ?",["0","1","-1"],0,"Python commence à l'indice 0."],
+      ["Ajouter à la fin d'une liste ?",["insert()","append()","remove()"],1,"append() ajoute un élément à la fin."]
+    ],
+    exercise:"Créer une liste de notes, compter les notes ≥ 10 et afficher la meilleure note.",
+    solution:`notes = [14, 9, 17, 11, 15]
+compteur = 0
+for note in notes:
+    if note >= 10:
+        compteur += 1
+print("Admis :", compteur)
+print("Meilleure note :", max(notes))`
+  },
+  {
+    id:"ch3", title:"Fonctions en Python", tag:"def · paramètres · return",
+    content:`<p>Les fonctions permettent de réutiliser le code et d'organiser un programme. Cette partie complète les éléments manquants du cours.</p>
+    <div class="box"><b>Définition.</b> Une fonction est déclarée avec <code>def</code>. Elle peut recevoir des paramètres et renvoyer un résultat avec <code>return</code>.</div>
+    <pre><code>def carre(x):
+    return x ** 2
+
+print(carre(5))</code></pre>
+    <h3>Fonction avec liste</h3><pre><code>def max_diff(liste):
+    maximum = 0
+    for i in range(len(liste)-1):
+        maximum = max(maximum, abs(liste[i+1]-liste[i]))
+    return maximum</code></pre>`,
+    code:`def total_panier(produits):
+    total = 0
+    for nom, prix in produits:
+        total += prix
+    return total
+
+def rechercher_produit(produits, nom):
+    for produit, prix in produits:
+        if produit == nom:
+            return prix
+    return "non trouvé"
+
+produits = [("pain", 2), ("lait", 3), ("riz", 5)]
+print(total_panier(produits))
+print(rechercher_produit(produits, "lait"))`,
+    quiz:[
+      ["Mot-clé pour définir une fonction ?",["func","def","function"],1,"En Python, on utilise def."],
+      ["À quoi sert return ?",["Afficher","Renvoyer une valeur","Créer une boucle"],1,"return renvoie le résultat de la fonction."]
+    ],
+    exercise:"Écrire une fonction max_diff(liste) qui retourne la plus grande différence absolue entre deux éléments consécutifs.",
+    solution:`def max_diff(liste):
+    maximum = 0
+    for i in range(len(liste)-1):
+        diff = abs(liste[i+1] - liste[i])
+        if diff > maximum:
+            maximum = diff
+    return maximum
+
+print(max_diff([4,6,3,8,1,9]))`
+  },
+  {
+    id:"ch4", title:"Modules, pip, OS et NumPy", tag:"import · random · os · numpy",
+    content:`<p>Python permet d'importer des modules pour étendre ses capacités : <code>math</code>, <code>random</code>, <code>os</code>, <code>numpy</code>.</p>
+    <pre><code>import math
+print(math.sqrt(16))
+
+from math import sqrt
+print(sqrt(16))
+
+import random
+print(random.randint(1, 10))</code></pre>
+    <h3>OS</h3><pre><code>import os
+print(os.getcwd())
+print(os.listdir("."))</code></pre>
+    <h3>NumPy</h3><pre><code>import numpy as np
+a = np.array([1,2,3])
+print(a * 2)
+print(a.mean())</code></pre>`,
+    code:`import numpy as np
+a = np.array([10, 20, 30, 40])
+print("Somme :", a.sum())
+print("Moyenne :", a.mean())
+print("x2 :", a * 2)`,
+    quiz:[
+      ["Outil d'installation de packages ?",["os","pip","random"],1,"pip installe et gère les packages."],
+      ["NumPy sert surtout à :",["Manipuler des tableaux numériques","Écrire du HTML","Créer des mots de passe"],0,"NumPy est utilisé pour le calcul numérique."]
+    ],
+    exercise:"Créer un tableau NumPy [2,4,6,8], afficher somme, moyenne et multiplication par 3.",
+    solution:`import numpy as np
+a = np.array([2,4,6,8])
+print(a.sum())
+print(a.mean())
+print(a * 3)`
+  },
+  {
+    id:"ch5", title:"Fichiers et POO", tag:"open · with · class · objets",
+    content:`<p>Les fichiers conservent les données. Les classes permettent de modéliser des objets avec attributs et méthodes.</p>
+    <h3>Fichiers</h3><pre><code>with open("data.txt", "w", encoding="utf-8") as f:
+    f.write("Bonjour")
+
+with open("data.txt", "r", encoding="utf-8") as f:
+    print(f.read())</code></pre>
+    <h3>Classes</h3><pre><code>class Etudiant:
+    def __init__(self, nom, note):
+        self.nom = nom
+        self.note = note
+
+    def est_admis(self):
+        return self.note >= 10</code></pre>`,
+    code:`class Produit:
+    def __init__(self, nom, prix):
+        self.nom = nom
+        self.prix = prix
+
+    def appliquer_remise(self, pourcentage):
+        self.prix *= (1 - pourcentage / 100)
+
+    def __str__(self):
+        return f"{self.nom} : {self.prix:.2f}"
+
+p = Produit("Clavier", 1000)
+p.appliquer_remise(10)
+print(p)`,
+    quiz:[
+      ["Mode lecture fichier ?",["r","w","a"],0,"r signifie read."],
+      ["self représente :",["l'objet courant","la classe entière","une liste"],0,"self référence l'instance actuelle."]
+    ],
+    exercise:"Créer une classe RendezVous avec nom, date, heure et une méthode afficher().",
+    solution:`class RendezVous:
+    def __init__(self, nom, date, heure):
+        self.nom = nom
+        self.date = date
+        self.heure = heure
+
+    def afficher(self):
+        print(f"{self.nom} - {self.date} à {self.heure}")
+
+rdv = RendezVous("Réunion", "20/04/2026", "10:00")
+rdv.afficher()`
+  },
+  {
+    id:"ch6", title:"Pandas et DataFrames", tag:"Series · DataFrame · filtrage · groupby",
+    content:`<p>Pandas est une bibliothèque d'analyse de données. Une <code>Series</code> est une colonne, une <code>DataFrame</code> est un tableau complet.</p>
+    <pre><code>import pandas as pd
+df = pd.DataFrame({
+    "Produit":["Laptop","Souris","Clavier"],
+    "Prix":[800,25,45],
+    "Stock":[15,120,85]
+})
+print(df.head())
+print(df.describe())</code></pre>
+    <h3>Filtrage</h3><pre><code>print(df[df["Prix"] > 50])
+print(df[(df["Prix"] > 20) & (df["Prix"] < 100)])</code></pre>`,
+    code:`import pandas as pd
+df = pd.DataFrame({
+    "Produit":["Laptop","Souris","Clavier","Ecran"],
+    "Prix":[800,25,45,200],
+    "Stock":[15,120,85,10]
+})
+print(df)
+print("\\nPrix > 50")
+print(df[df["Prix"] > 50])
+print("\\nPrix moyen :", df["Prix"].mean())`,
+    quiz:[
+      ["DataFrame est :",["Un tableau 2D","Une seule valeur","Une boucle"],0,"Une DataFrame est un tableau avec lignes et colonnes."],
+      ["Aperçu des premières lignes ?",["df.head()","df.start()","df.first()"],0,"df.head() affiche les premières lignes."]
+    ],
+    exercise:"Créer un DataFrame de produits, filtrer Stock > 20 et calculer le prix moyen.",
+    solution:`import pandas as pd
+df = pd.DataFrame({
+    "Produit":["A","B","C"],
+    "Prix":[100,50,80],
+    "Stock":[10,40,30]
+})
+print(df[df["Stock"] > 20])
+print(df["Prix"].mean())`
+  },
+  {
+    id:"ch7", title:"Préparation aux devoirs", tag:"sous-chaînes · matrices · logs · mini-projets",
+    content:`<p>Cette partie prépare aux exercices de contrôle : sous-chaînes, listes, fonctions, fichiers, logs, rendez-vous et matrices.</p>
+    <h3>Sous-chaîne</h3><pre><code>ch1 = "programmation python"
+ch2 = "python"
+if ch2 in ch1:
+    print("Trouvée")</code></pre>
+    <h3>Carré magique</h3><pre><code>def est_carre_magique(M):
+    n = len(M)
+    cible = sum(M[0])
+    for ligne in M:
+        if sum(ligne) != cible:
+            return False
+    for j in range(n):
+        if sum(M[i][j] for i in range(n)) != cible:
+            return False
+    return True</code></pre>`,
+    code:`def max_diff_consecutive(liste):
+    if len(liste) < 2:
+        return 0
+    maximum = abs(liste[1] - liste[0])
+    for i in range(1, len(liste)-1):
+        diff = abs(liste[i+1] - liste[i])
+        if diff > maximum:
+            maximum = diff
+    return maximum
+
+print(max_diff_consecutive([4,6,3,8,1,9]))`,
+    quiz:[
+      ["Tester si ch2 est dans ch1 ?",["inside","in","contains"],1,"L'opérateur Python est in."],
+      ["Valeur absolue ?",["absolute()","abs()","mod()"],1,"abs(x) retourne la valeur absolue."]
+    ],
+    exercise:"Écrire total_panier(produits) qui reçoit des tuples (nom, prix) et renvoie le total.",
+    solution:`def total_panier(produits):
+    total = 0
+    for nom, prix in produits:
+        total += prix
+    return total
+
+print(total_panier([("pain",2),("lait",3),("riz",5)]))`
+  }
+];
+
+const DB_KEY = "academie_python_db_v2";
+let db = JSON.parse(localStorage.getItem(DB_KEY) || "null") || {
+  student:{name:"", group:""},
+  completed:{},
+  quiz:{},
+  runs:0,
+  theme:"light",
+  lastLogin:null
+};
+
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(db)); updateUI(); }
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); }
+
+function login(){
+  const name = document.getElementById("studentName").value.trim() || "Étudiant";
+  const group = document.getElementById("studentGroup").value.trim() || "Groupe non défini";
+  db.student={name,group};
+  db.lastLogin=new Date().toLocaleString();
+  saveDB();
+  document.getElementById("loginModal").classList.add("hidden");
+  document.body.classList.remove("locked");
+  toast("Connexion réussie");
+}
+
+document.getElementById("loginBtn").addEventListener("click", login);
+if(db.student.name){
+  document.getElementById("loginModal").classList.add("hidden");
+  document.body.classList.remove("locked");
+}
+
+function render(){
+  const side = document.getElementById("sideNav");
+  const grid = document.getElementById("courseGrid");
+  const wrap = document.getElementById("chapters");
+  side.innerHTML = "";
+  grid.innerHTML = "";
+  wrap.innerHTML = "";
+  CHAPTERS.forEach((ch, idx)=>{
+    side.innerHTML += `<a class="nav-link" href="#${ch.id}"><span>${idx+1}. ${ch.title}</span><small class="badge" id="badge-${ch.id}">0%</small></a>`;
+    grid.innerHTML += `<a class="course-card" href="#${ch.id}">
+      <span class="num">Chapitre ${idx+1}</span><h3>${ch.title}</h3><p>${ch.tag}</p>
+      <div class="bar" style="margin-top:14px"><span id="cardbar-${ch.id}"></span></div>
+    </a>`;
+    const quizHtml = ch.quiz.map((q,i)=>`
+      <div class="quiz" data-ch="${ch.id}" data-q="${i}">
+        <div class="quiz-title">Quiz ${i+1}</div>
+        <p>${q[0]}</p>
+        ${q[1].map((op,j)=>`<button class="option" data-correct="${j===q[2]}">${op}</button>`).join("")}
+        <div class="feedback"></div>
+        <button class="btn secondary solution-btn">Afficher la solution</button>
+        <div class="solution"><b>Solution :</b> ${q[3]}</div>
+      </div>`).join("");
+    wrap.innerHTML += `<section class="chapter" id="${ch.id}">
+      <div class="chapter-head"><small>Chapitre ${idx+1}</small><h2>${ch.title}</h2><p>${ch.tag}</p></div>
+      ${ch.content}
+      <div class="runner" data-ch="${ch.id}">
+        <h3>Zone d'exécution Python</h3><p>Modifiez le code puis exécutez-le.</p>
+        <textarea spellcheck="false">${ch.code}</textarea>
+        <div class="runbar"><button class="btn run">Exécuter</button><span class="status">Pyodide se charge au premier lancement...</span></div>
+        <pre class="output">Sortie du programme...</pre>
+      </div>
+      ${quizHtml}
+      <div class="exercise">
+        <h3>Exercice d'entraînement</h3>
+        <p>${ch.exercise}</p>
+        <button class="btn secondary solution-btn">Afficher la solution</button>
+        <div class="solution"><pre><code>${ch.solution}</code></pre></div>
+      </div>
+      <label class="checkline"><input type="checkbox" class="complete-check" data-ch="${ch.id}"> J'ai terminé ce chapitre</label>
+    </section>`;
+  });
+}
+render();
+
+document.addEventListener("click", e=>{
+  if(e.target.classList.contains("solution-btn")){
+    const sol = e.target.nextElementSibling;
+    sol.classList.toggle("visible");
+    e.target.textContent = sol.classList.contains("visible") ? "Masquer la solution" : "Afficher la solution";
+  }
+  if(e.target.classList.contains("option")){
+    const quiz = e.target.closest(".quiz");
+    const ch = quiz.dataset.ch, q = quiz.dataset.q;
+    quiz.querySelectorAll(".option").forEach(o=>o.disabled=true);
+    const ok = e.target.dataset.correct === "true";
+    e.target.classList.add(ok ? "correct":"wrong");
+    if(!ok) quiz.querySelector('[data-correct="true"]').classList.add("correct");
+    quiz.querySelector(".feedback").textContent = ok ? "Bonne réponse ✅" : "Réponse incorrecte. Consultez la solution.";
+    db.quiz[`${ch}-${q}`] = ok;
+    saveDB();
+  }
+});
+
+document.addEventListener("change", e=>{
+  if(e.target.classList.contains("complete-check")){
+    db.completed[e.target.dataset.ch] = e.target.checked;
+    saveDB();
+    toast(e.target.checked ? "Chapitre marqué comme terminé" : "Chapitre décoché");
+  }
+});
+
+let pyodideReady = null;
+async function getPyodide(){
+  if(!pyodideReady){
+    pyodideReady = loadPyodide().then(async pyodide=>{
+      await pyodide.loadPackage(["numpy","pandas"]);
+      return pyodide;
+    });
+  }
+  return pyodideReady;
+}
+
+document.addEventListener("click", async e=>{
+  if(!e.target.classList.contains("run")) return;
+  const runner = e.target.closest(".runner");
+  const textarea = runner.querySelector("textarea");
+  const output = runner.querySelector(".output");
+  const status = runner.querySelector(".status");
+  output.textContent = "Exécution en cours...";
+  status.textContent = "Chargement / exécution...";
+  try{
+    const pyodide = await getPyodide();
+    pyodide.runPython(`
+import sys, io
+sys.stdout = io.StringIO()
+sys.stderr = sys.stdout
+`);
+    await pyodide.runPythonAsync(textarea.value);
+    const result = pyodide.runPython("sys.stdout.getvalue()");
+    output.textContent = result || "(aucune sortie)";
+    status.textContent = "Terminé ✅";
+    db.runs += 1;
+    saveDB();
+  }catch(err){
+    output.textContent = String(err);
+    status.textContent = "Erreur ❌";
+  }
+});
+
+document.getElementById("themeBtn").addEventListener("click", ()=>{
+  db.theme = db.theme === "dark" ? "light" : "dark";
+  saveDB();
+});
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Réinitialiser toutes les données locales ?")){
+    localStorage.removeItem(DB_KEY);
+    location.reload();
+  }
+});
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(db,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "base_progression_python.json";
+  a.click();
+});
+
+function updateUI(){
+  document.documentElement.dataset.theme = db.theme || "light";
+  document.getElementById("displayName").textContent = db.student.name || "Étudiant";
+  document.getElementById("displayGroup").textContent = db.student.group || "Groupe non défini";
+  document.getElementById("terminalName").textContent = db.student.name || "Étudiant";
+  document.getElementById("avatar").textContent = (db.student.name || "?").trim()[0]?.toUpperCase() || "?";
+  const totalCh = CHAPTERS.length;
+  const done = CHAPTERS.filter(ch=>db.completed[ch.id]).length;
+  const quizTotal = CHAPTERS.reduce((s,ch)=>s+ch.quiz.length,0);
+  const quizGood = Object.values(db.quiz).filter(Boolean).length;
+  const progress = Math.round(((done / totalCh) * 70 + (quizGood / quizTotal) * 30) || 0);
+  document.getElementById("globalBar").style.width = progress + "%";
+  document.getElementById("globalText").textContent = progress + "%";
+  document.getElementById("statChapters").textContent = `${done}/${totalCh}`;
+  document.getElementById("statScore").textContent = Math.round((quizGood/quizTotal)*100 || 0) + "%";
+  document.getElementById("statRuns").textContent = db.runs;
+  CHAPTERS.forEach(ch=>{
+    const chapterQuizTotal = ch.quiz.length;
+    let qgood = 0;
+    ch.quiz.forEach((_,i)=>{ if(db.quiz[`${ch.id}-${i}`]) qgood++; });
+    const cp = Math.round(((db.completed[ch.id]?70:0) + (qgood/chapterQuizTotal)*30) || 0);
+    const badge = document.getElementById(`badge-${ch.id}`);
+    const bar = document.getElementById(`cardbar-${ch.id}`);
+    const check = document.querySelector(`.complete-check[data-ch="${ch.id}"]`);
+    if(badge) badge.textContent = cp + "%";
+    if(bar) bar.style.width = cp + "%";
+    if(check) check.checked = !!db.completed[ch.id];
+  });
+  const table = document.getElementById("dbTable");
+  table.innerHTML = `
+    <tr><td>Nom</td><td>${db.student.name || ""}</td></tr>
+    <tr><td>Groupe</td><td>${db.student.group || ""}</td></tr>
+    <tr><td>Chapitres terminés</td><td>${done}/${totalCh}</td></tr>
+    <tr><td>Bonnes réponses quiz</td><td>${quizGood}/${quizTotal}</td></tr>
+    <tr><td>Codes exécutés</td><td>${db.runs}</td></tr>
+    <tr><td>Dernière connexion</td><td>${db.lastLogin || ""}</td></tr>
+    <tr><td>Type de base</td><td>localStorage navigateur</td></tr>`;
+}
+updateUI();
+
+window.addEventListener("scroll",()=>{
+  const h=document.documentElement;
+  const p=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+  document.getElementById("topProgress").style.width=p+"%";
+});
+</script>
+
+<footer style="text-align:center;padding:30px;font-weight:900;color:#888;">
+BY SIDI MOHAMED
+</footer>
+</body>
+
+</html>
